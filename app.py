@@ -1,22 +1,18 @@
 import gradio as gr
 import os
 
-def ganesh_chat(m,h):
-    return "Jai Ganesh! You said: " + m + " - Ganpati Bappa Morya!"
+def chat(m, h):
+    reply = "Jai Ganesh! You said: " + m
+    return reply
 
-with gr.Blocks(title="Ganesh AI") as demo:
+with gr.Blocks() as demo:
     gr.Markdown("# Ganesh AI")
-    chatbot=gr.Chatbot(height=400)
-    msg=gr.Textbox(label="Message",placeholder="Jai Ganesh!")
-    clear=gr.Button("Clear")
-    def um(message,history):
-        return "",history+[[message,None]]
-    def br(history):
-        history[-1][1]=ganesh_chat(history[-1][0],history)
-        return history
-    msg.submit(um,[msg,chatbot],[msg,chatbot]).then(br,chatbot,chatbot)
-    clear.click(lambda:None,None,chatbot,queue=False)
+    bot = gr.Chatbot()
+    txt = gr.Textbox()
+    def ask(msg, hist):
+        hist = hist + [[msg, chat(msg, hist)]]
+        return "", hist
+    txt.submit(ask, [txt, bot], [txt, bot])
 
-if __name__=="__main__":
-    port=int(os.environ.get("PORT",10000))
-    demo.launch(server_name="0.0.0.0",server_port=port)
+port = int(os.environ.get("PORT", 10000))
+demo.launch(server_name="0.0.0.0", server_port=port)
